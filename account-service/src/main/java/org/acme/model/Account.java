@@ -1,44 +1,38 @@
 package org.acme.model;
 
+import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@Entity
+@NamedQuery(name = "Accounts.findAll",
+        query = "SELECT a FROM Account a ORDER BY a.accountNumber")
+@NamedQuery(name = "Accounts.findByAccountNumber", query = "SELECT a FROM Account a WHERE a.accountNumber = :accountNumber ORDER BY a.accountNumber")
 @Getter
+@Setter
 @EqualsAndHashCode
 public class Account {
+    @Id
+    @SequenceGenerator(name = "accountsSequence", sequenceName =
+            "accounts_id_seq",
+            allocationSize = 1, initialValue = 10)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+            generator = "accountsSequence")
+    private Long id;
     private Long accountNumber;
+
     private Long customerNumber;
     private String customerName;
     private BigDecimal balance;
     private AccountStatus accountStatus = AccountStatus.OPEN;
 
-    public Account() {
-    }
-
-    public Account(Long accountNumber, Long customerNumber, String
-            customerName, BigDecimal balance) {
-        this.accountNumber = accountNumber;
-        this.customerNumber = customerNumber;
-        this.customerName = customerName;
-        this.balance = balance;
-    }
-    public void markOverdrawn() {
-        accountStatus = AccountStatus.OVERDRAWN;
-    }
-    public void removeOverdrawnStatus() {
-        accountStatus = AccountStatus.OPEN;
-    }
-    public void close() {
-        accountStatus = AccountStatus.CLOSED;
-        balance = BigDecimal.valueOf(0);
-    }
-    public void withdrawFunds(BigDecimal amount) {
-        balance = balance.subtract(amount);
-    }
-    public void addFunds(BigDecimal amount) {
-        balance = balance.add(amount);
+    public Account withdrawFunds(BigDecimal amout) {
+        this.setBalance(this.getBalance().subtract(amout));
+        return this;
     }
 
 }
