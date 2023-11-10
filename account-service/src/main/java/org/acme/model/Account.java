@@ -1,7 +1,6 @@
 package org.acme.model;
 
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,5 +33,4 @@ public class Account {
         this.setBalance(this.getBalance().subtract(amout));
         return this;
     }
-
 }

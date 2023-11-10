@@ -44,6 +44,7 @@ public class AccountResourceEm {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response createAccount(Account account) {
         if (account.getAccountNumber() == null) {
             throw new WebApplicationException("No Account number specified.", 400);
