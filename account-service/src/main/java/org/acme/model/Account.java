@@ -1,8 +1,9 @@
 package org.acme.model;
 
 import jakarta.persistence.*;
-import lombok.EqualsAndHashCode;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -13,8 +14,20 @@ import java.math.BigDecimal;
 @NamedQuery(name = "Accounts.findByAccountNumber", query = "SELECT a FROM Account a WHERE a.accountNumber = :accountNumber ORDER BY a.accountNumber")
 @Getter
 @Setter
-@EqualsAndHashCode
-public class Account {
+public class Account extends BaseAccount {
+    public Account() {
+    }
+
+    @Builder
+    public Account(Long id, Long accountNumber, Long customerNumber, String customerName, BigDecimal balance) {
+        this.id = id;
+        this.accountNumber = accountNumber;
+        this.accountStatus = AccountStatus.OPEN;
+        this.customerNumber = customerNumber;
+        this.customerName = customerName;
+        this.balance = balance;
+    }
+
     @Id
     @SequenceGenerator(name = "accountsSequence", sequenceName =
             "accounts_id_seq",
@@ -22,15 +35,4 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
             generator = "accountsSequence")
     private Long id;
-    private Long accountNumber;
-
-    private Long customerNumber;
-    private String customerName;
-    private BigDecimal balance;
-    private AccountStatus accountStatus = AccountStatus.OPEN;
-
-    public Account withdrawFunds(BigDecimal amout) {
-        this.setBalance(this.getBalance().subtract(amout));
-        return this;
-    }
 }

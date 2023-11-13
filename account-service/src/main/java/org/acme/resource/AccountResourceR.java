@@ -1,29 +1,27 @@
-package org.acme;
+package org.acme.resource;
 
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.model.Account;
+import org.acme.repo.AccountRepository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Path("/accounts/em")
-public class AccountResourceEm {
+@Path("/accounts/repository")
+public class AccountResourceR {
 
     @Inject
-    EntityManager entityManager;
+    AccountRepository accountRepository;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public List<Account> allAccounts() {
-        return entityManager
-                .createNamedQuery("Accounts.findAll", Account.class)
-                .getResultList();
+        return accountRepository.listAll();
     }
 
     @GET
@@ -31,10 +29,7 @@ public class AccountResourceEm {
     @Produces(MediaType.APPLICATION_JSON)
     public Account getAccount(@PathParam("accountNumber") Long accountNumber) {
         try {
-            return entityManager
-                    .createNamedQuery("Accounts.findByAccountNumber", Account.class)
-                    .setParameter("accountNumber", accountNumber)
-                    .getSingleResult();
+            return accountRepository.findByAccountNumber(accountNumber);
         } catch (NoResultException nre) {
             throw new WebApplicationException("Account with " + accountNumber
                     + " does not exist.", 404);
@@ -47,9 +42,9 @@ public class AccountResourceEm {
     @Transactional
     public Response createAccount(Account account) {
         if (account.getAccountNumber() == null) {
-            throw new WebApplicationException("No Account number specified.", 400);
+            throw new WebApplicationException("No Account number specified.", 404);
         }
-        entityManager.persist(account);
+        accountRepository.persistAndFlush(account);
         return Response.status(201).entity(account).build();
     }
 
@@ -60,8 +55,8 @@ public class AccountResourceEm {
     public Account withdrawal(@PathParam("accountNumber") Long accountNumber,
                               String amount) {
         Account entity = getAccount(accountNumber);
-        Account updatedAccount = entity.withdrawFunds(new BigDecimal(amount));
-        entityManager.merge(updatedAccount);
+        Account updatedAccount = (Account) entity.withdrawFunds(new BigDecimal(amount));
+        accountRepository.persist(updatedAccount);
         return entity;
     }
 

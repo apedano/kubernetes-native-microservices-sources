@@ -1,4 +1,4 @@
-package org.acme;
+package org.acme.resource;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObjectBuilder;

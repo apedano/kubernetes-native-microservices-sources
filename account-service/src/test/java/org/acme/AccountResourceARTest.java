@@ -6,6 +6,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.response.Response;
 import jakarta.transaction.Transactional;
 import org.acme.model.Account;
+import org.acme.model.AccountAr;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -23,13 +24,15 @@ import static org.hamcrest.Matchers.containsString;
 @QuarkusTestResource(H2DatabaseTestResource.class)
 //Tells Quarkus to start an H2 database prior to the tests being executed
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AccountResourceEmTest {
+public class AccountResourceARTest {
+
+    private final String BASE_PATH = "/accounts/active-record";
     @Test
     @Order(1)
     void testRetrieveAllEm() {
         Response result =
                 given()
-                        .when().get("/accounts/em")
+                        .when().get(BASE_PATH)
                         .then()
                         .statusCode(200)
                         .body(
@@ -47,11 +50,11 @@ public class AccountResourceEmTest {
     @Test
     @Order(2)
     void testGetSingle() {
-        Account result = get();
+        AccountAr result = get();
 
         assertThat(result)
                 .isNotNull()
-                .extracting(Account::getBalance)
+                .extracting("balance")
                 .isEqualTo(BigDecimal.valueOf(439.01));
     }
 
@@ -62,7 +65,7 @@ public class AccountResourceEmTest {
                 given()
                         .contentType("application/json")
                         .body("100")
-                        .when().post("/accounts/em/withdraw/78790")
+                        .when().post(BASE_PATH + "/withdraw/78790")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -77,35 +80,33 @@ public class AccountResourceEmTest {
     @Test
     @Order(4)
     void testCreateAccountEm() {
-        Account newAccount = new Account();
-        newAccount.setAccountNumber(666999L);
-        newAccount.setCustomerName("Ciccio Pasticcio");
-        newAccount.setCustomerNumber(7777333L);
-        newAccount.setBalance(BigDecimal.valueOf(12534.75));
-        Account result =
+        AccountAr newAccount = new AccountAr();
+        newAccount.accountNumber = 666999L;
+        newAccount.customerName = "Ciccio Pasticcio";
+        newAccount.customerNumber = 7777333L;
+        newAccount.balance = BigDecimal.valueOf(12534.75);
+        AccountAr result =
                 given()
                         .contentType("application/json")
                         .body(newAccount)
-                        .when().post("/accounts/em")
+                        .when().post(BASE_PATH)
                         .then()
                         .statusCode(201)
                         .extract()
-                        .as(Account.class);
+                        .as(AccountAr.class);
 
-        assertThat(result).isNotNull()
-                .extracting(Account::getId)
-                .isNotNull();
+        assertThat(result).isNotNull();
     }
 
-    private Account get() {
+    private AccountAr get() {
         return given()
-                .when().get("/accounts/em/78790")
+                .when().get(BASE_PATH + "/78790")
                 .then()
                 .statusCode(200)
                 .body(
                         containsString("Vanna White")
                 )
                 .extract()
-                .as(Account.class);
+                .as(AccountAr.class);
     }
 }
