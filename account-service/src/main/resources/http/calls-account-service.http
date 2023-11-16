@@ -1,0 +1,42 @@
+
+
+
+POST http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/ar
+Content-Type: application/json
+
+{
+  "accountNumber":3, "customerNumber":5, "customerName":"Customer5", "balance":123321.122
+}
+
+###
+GET http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/ar
+Accept: application/json
+
+###
+
+GET http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/repo/
+Accept: application/json
+
+###
+
+GET {{uri}}/accounts/repository/
+Accept: application/json
+
+### This call will lead to overdrawn account
+
+POST {{uri}}/accounts/repository/123456789/transaction
+Content-Type: application/json
+
+600
+
+###
+
+GET http://localhost:8082/accounts/repository/123456789/balance
+Accept: application/json
+
+
+
+
+
+
+

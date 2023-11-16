@@ -6,13 +6,16 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import lombok.extern.slf4j.Slf4j;
 
 @Provider //indicates the class is an autodiscovered JAX-RS Provider
+@Slf4j
 public class ResourceErrorMapper implements ExceptionMapper<Exception> { //Implements ExceptionMapper for all Exception types
     @Override
     public Response toResponse(Exception exception) {
         int code = 500;
         if (exception instanceof WebApplicationException) {
+            log.info("Managing WebApplicationException:{} - code {}", exception.getMessage(), ((WebApplicationException) exception).getResponse().getStatus());
             code = ((WebApplicationException) exception)
                     .getResponse().getStatus();
         }
