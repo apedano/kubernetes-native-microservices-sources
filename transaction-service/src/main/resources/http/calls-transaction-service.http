@@ -1,0 +1,23 @@
+### This call will lead to overdrawn
+POST {{uri}}/transactions/123456789
+Content-Type: application/json
+
+600
+
+###
+
+POST http://localhost:8088/transactions/123456789
+Content-Type: application/json
+
+600
+
+###
+
+
+POST http://transaction-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/transactions/123456789
+Content-Type: application/json
+
+1
+
+###
+

@@ -1,0 +1,5 @@
+'%prod':
+    quarkus:
+        rest-client:
+            'account-service':
+                url: http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com
