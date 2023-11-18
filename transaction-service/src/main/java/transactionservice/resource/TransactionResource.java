@@ -22,6 +22,13 @@ public class TransactionResource {
     @RestClient //CDI qualifier telling Quarkus to inject a type-safe REST client bean matching the interface
     AccountService accountService;
 
+    @GET
+    @Path("/{acctNumber}/balance")
+    public Response balance(@PathParam("acctNumber") Long accountNumber) {
+        BigDecimal balance = accountService.getBalance(accountNumber);
+        return Response.ok(balance).build();
+    }
+
     @POST
     @Path("/{acctNumber}")
     public Response newTransaction(@PathParam("acctNumber") Long accountNumber,

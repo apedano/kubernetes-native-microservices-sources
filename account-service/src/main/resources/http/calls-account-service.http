@@ -1,7 +1,7 @@
 
 
 
-POST http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/ar
+POST http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/active-record
 Content-Type: application/json
 
 {
@@ -9,7 +9,11 @@ Content-Type: application/json
 }
 
 ###
-GET http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/ar
+GET http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/active-record
+Accept: application/json
+
+###
+GET http://account-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/accounts/repository
 Accept: application/json
 
 ###
@@ -34,6 +38,23 @@ Content-Type: application/json
 GET http://localhost:8082/accounts/repository/123456789/balance
 Accept: application/json
 
+### Health checks. Introduced by quarkus-smallrye-health dependency
+
+GET http://localhost:8082/q/health
+
+Accept: application/json
+
+### Health checks. Introduced by quarkus-smallrye-health dependency
+
+GET http://localhost:8082/q/health/live
+
+Accept: application/json
+
+### Health checks. Introduced by quarkus-smallrye-health dependency
+
+GET http://localhost:8082/q/health/ready
+
+Accept: application/json
 
 
 

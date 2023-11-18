@@ -21,3 +21,14 @@ Content-Type: application/json
 
 ###
 
+GET http://transaction-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/transactions/5465/balance
+
+###
+
+POST http://transaction-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com//health-config
+Content-Type: application/json
+
+{
+  "healty": true,
+  "ready": true
+}

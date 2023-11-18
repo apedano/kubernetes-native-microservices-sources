@@ -92,6 +92,12 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-kubernetes-config</artifactId>
     </dependency>
+<!--    Activate Microprofile Health API  liveness and readiness probes (checks and endponts) -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-health</artifactId>
+    </dependency>
+
 <!--    TEST DB dependencies-->
     <dependency>
       <groupId>io.quarkus</groupId>
