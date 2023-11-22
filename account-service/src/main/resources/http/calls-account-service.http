@@ -56,6 +56,10 @@ GET http://localhost:8082/q/health/ready
 
 Accept: application/json
 
+### Bulkhead trigger, call this multiple times within the sleep to trigger the bulkhead fallback
+
+GET http://localhost:8082/resilience/do-delivery-bulkhead
+
 
 
 
