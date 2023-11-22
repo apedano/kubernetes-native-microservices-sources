@@ -1,11 +1,9 @@
 package org.acme.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
-
 import io.restassured.response.Response;
 import jakarta.ws.rs.core.Response.Status;
 import lombok.extern.slf4j.Slf4j;
-
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,11 +11,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
-
 
 import static io.restassured.RestAssured.given;
-import static jakarta.ws.rs.core.Response.Status.*;
+import static jakarta.ws.rs.core.Response.Status.GATEWAY_TIMEOUT;
+import static jakarta.ws.rs.core.Response.Status.OK;
 import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.assertThat;
 
