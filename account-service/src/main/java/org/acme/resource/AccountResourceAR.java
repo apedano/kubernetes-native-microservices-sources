@@ -1,17 +1,32 @@
 package org.acme.resource;
 
+import io.smallrye.common.annotation.Blocking;
+import io.smallrye.reactive.messaging.kafka.api.OutgoingKafkaRecordMetadata;
+import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.acme.model.AccountAr;
+import lombok.extern.slf4j.Slf4j;
+import org.acme.model.*;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.eclipse.microprofile.reactive.messaging.Incoming;
+import org.eclipse.microprofile.reactive.messaging.Message;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 @Path("/accounts/active-record")
+@Slf4j
 public class AccountResourceAR {
+
+    @Inject
+    @Channel("account-overdrawn")
+    Emitter<Overdrawn> emitter;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -45,16 +60,68 @@ public class AccountResourceAR {
         return Response.status(201).entity(account).build();
     }
 
-    @POST
-    @Path("withdraw/{accountNumber}")
+    @PUT
+    @Path("/{accountNumber}/withdraw")
     @Produces(MediaType.APPLICATION_JSON)
     @Transactional
-    public AccountAr withdrawal(@PathParam("accountNumber") Long accountNumber,
-                                String amount) {
+    public CompletionStage<AccountAr> withdrawal(@PathParam("accountNumber") Long accountNumber,
+                                                 String amount) {
+        log.info("Called withdrawal for account #{} with amount {}", accountNumber, amount);
         AccountAr entity = getAccount(accountNumber);
-        entity.withdrawFunds(new BigDecimal(amount));
-        entity.persist();
-        return entity;
+        try {
+            entity.withdrawFunds(new BigDecimal(amount));
+            entity.persist();
+            if(entity.accountStatus.equals(AccountStatus.OVERDRAWN)) {
+                return handleOverdrawn(entity);
+            }
+            return CompletableFuture.completedFuture(entity);
+        } catch (AccountOverdrawnException e) {
+            throw new WebApplicationException(
+                    "Account is overdrawn, no further withdrawals permitted",
+                    Response.Status.PRECONDITION_FAILED);
+        }
+    }
+
+
+    @Incoming("overdraft-update")
+    @Blocking //needed for the interaction with the DB
+    @Transactional //it will persist the updated account
+    public void processOverdraftUpdate(OverdraftLimitUpdate overdraftLimitUpdate) {
+        AccountAr account =
+                AccountAr.findByAccountNumber(overdraftLimitUpdate.getAccountNumber());
+        account.overdraftLimit = overdraftLimitUpdate.getNewOverdraftLimit();
+    }
+
+    private CompletionStage<AccountAr> handleOverdrawn(AccountAr entity) {
+        Overdrawn overdrawn = new Overdrawn(entity);
+        log.info("Sending account overdrawn notification");
+        CompletionStage<Void> sendFuture = emitter.send(overdrawn);
+        return sendFuture.thenCompose(empty -> CompletableFuture.completedFuture(entity));
+    }
+
+    private CompletionStage<AccountAr> handleOverdrawnWithMessage(AccountAr entity) {
+        Overdrawn payload = new Overdrawn(entity);
+        CompletableFuture<AccountAr> future = new CompletableFuture<>();
+        OutgoingKafkaRecordMetadata<String> myRecordMetadata = OutgoingKafkaRecordMetadata.
+                <String>builder()
+                .withKey("my-key") //if we want to make the key explicit
+                .withTopic("myDynamicTopic") //
+                .build();
+        Message<Overdrawn> message =
+                Message.of(payload)
+                        .addMetadata(myRecordMetadata)
+                        .withAck(() -> {
+                            log.info("The account #{} overdrawn has been acked", entity.accountNumber);
+                            future.complete(entity);
+                            return CompletableFuture.completedFuture(null);
+                        })
+                        .withNack(throwable -> {
+                            log.info("The account #{} overdrawn has been nacked", entity.accountNumber);
+                            future.completeExceptionally(throwable);
+                            return CompletableFuture.completedFuture(null);
+                        });
+        emitter.send(message); //this is a void method
+        return future; //we return
     }
 
 }

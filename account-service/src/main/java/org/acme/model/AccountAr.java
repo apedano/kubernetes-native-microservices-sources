@@ -25,7 +25,7 @@ public class AccountAr extends PanacheEntityBase {
     public Long customerNumber;
     public String customerName;
     public BigDecimal balance;
-//    public BigDecimal overdraftLimit;
+    public BigDecimal overdraftLimit;
     public AccountStatus accountStatus = AccountStatus.OPEN;
 
 
@@ -36,8 +36,14 @@ public class AccountAr extends PanacheEntityBase {
         return find("accountNumber", accountNumber).firstResult();
     }
 
-    public void withdrawFunds(BigDecimal amount) {
+    public void withdrawFunds(BigDecimal amount) throws AccountOverdrawnException {
+        if(this.accountStatus == AccountStatus.OVERDRAWN) {
+            throw new AccountOverdrawnException();
+        }
         balance = balance.subtract(amount);
+        if(balance.compareTo(overdraftLimit) <= 0) {
+            this.accountStatus = AccountStatus.OVERDRAWN;
+        }
     }
 
     @Override

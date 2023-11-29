@@ -63,8 +63,12 @@ Accept: application/json
 
 GET http://localhost:8082/resilience/do-delivery-bulkhead
 
+### Overdrawn trigger
 
+POST http://localhost:8082/accounts/active-record/withdraw/123456789
+Content-Type: application/json
 
+1000
 
 
 

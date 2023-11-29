@@ -65,7 +65,7 @@ public class AccountResourceARTest {
                 given()
                         .contentType("application/json")
                         .body("100")
-                        .when().post(BASE_PATH + "/withdraw/78790")
+                        .when().put(BASE_PATH + "/78790/withdraw")
                         .then()
                         .statusCode(200)
                         .extract()
@@ -79,6 +79,36 @@ public class AccountResourceARTest {
 
     @Test
     @Order(4)
+    void testWithdrawWithOverdrawnException() {
+        AccountAr account = get();
+
+        BigDecimal withdrawForOverdrawn = account.overdraftLimit.abs().add(account.balance).add(BigDecimal.ONE);
+
+
+        Account response = given()
+                .contentType("application/json")
+                .body(withdrawForOverdrawn.toString())
+                .when().put(BASE_PATH + "/" + account.accountNumber + "/withdraw")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(Account.class);
+
+        //now we have overdrawn exception
+
+        given()
+                .contentType("application/json")
+                .body("1")
+                .when().put(BASE_PATH + "/" + account.accountNumber + "/withdraw")
+                .then()
+                .statusCode(jakarta.ws.rs.core.Response.Status.PRECONDITION_FAILED.getStatusCode())
+                .extract();
+
+
+    }
+
+    @Test
+    @Order(5)
     void testCreateAccountEm() {
         AccountAr newAccount = new AccountAr();
         newAccount.accountNumber = 666999L;

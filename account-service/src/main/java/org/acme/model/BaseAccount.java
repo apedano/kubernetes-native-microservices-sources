@@ -19,6 +19,7 @@ abstract class BaseAccount {
     protected String customerName;
     protected BigDecimal balance;
     protected AccountStatus accountStatus = AccountStatus.OPEN;
+    protected BigDecimal overdraftLimit;
 
     public BaseAccount withdrawFunds(BigDecimal amount) {
         this.setBalance(this.getBalance().subtract(amount));
