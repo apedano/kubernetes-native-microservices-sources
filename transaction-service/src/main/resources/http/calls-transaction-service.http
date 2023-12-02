@@ -13,6 +13,11 @@ Content-Type: application/json
 
 ###
 
+GET http://localhost:8088/transactions/123456789/balance
+Content-Type: application/json
+
+###
+
 
 POST http://transaction-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/transactions/123456789
 Content-Type: application/json
@@ -22,6 +27,10 @@ Content-Type: application/json
 ###
 
 GET http://transaction-service-xan80-dev.apps.sandbox-m4.g2pi.p1.openshiftapps.com/transactions/5465/balance
+
+###
+
+GET http://localhost:8088/transactions/5465/balance
 
 ###
 

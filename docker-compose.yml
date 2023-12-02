@@ -58,6 +58,7 @@ services:
 
   account-service:
     image: apedano/quarkus-account-service:latest
+    container_name: account-service #this is used for external access within the network
     ports:
       - "8082:8082" # http://localhost:8082
     environment:
@@ -65,6 +66,19 @@ services:
     depends_on:
       - kafka
       - db
+    networks:
+      - quarkus-bank-network
+  transaction-service:
+    image: apedano/quarkus-transaction-service:latest
+    container_name: transaction-service #this is used for external access within the network
+    ports:
+      - "8088:8088" # http://localhost:8088
+    environment:
+      - QUARKUS_HTTP_PORT=8088
+      - quarkus.rest-client.account-service.url=http://account-service:8082
+    depends_on:
+      - kafka
+      - account-service
     networks:
       - quarkus-bank-network
 networks:
