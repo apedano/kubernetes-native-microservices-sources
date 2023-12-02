@@ -65,7 +65,7 @@ GET http://localhost:8082/resilience/do-delivery-bulkhead
 
 ### Overdrawn trigger
 
-POST http://localhost:8082/accounts/active-record/withdraw/123456789
+PUT http://localhost:8082/accounts/active-record/123456789/withdraw
 Content-Type: application/json
 
 1000
