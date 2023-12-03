@@ -33,23 +33,8 @@ public class TransactionResource {
     @Path("/{acctNumber}")
     public Response newTransaction(@PathParam("acctNumber") Long accountNumber,
                                    BigDecimal amount) {
-        accountService.transact(accountNumber, amount);
+        accountService.withdraw(accountNumber, amount.multiply(BigDecimal.valueOf(-1)));
         return Response.ok().build();
     }
 
-    @POST
-    @Path("/{acctNumber}/headers")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response newTransactionHeaders(@PathParam("acctNumber") Long accountNumber,
-                                   BigDecimal amount, @Context HttpHeaders httpHeaders) {
-        log.info("In the newTransactionHeaders method");
-        log.info("Httpheaders:" + httpHeaders.getRequestHeaders());
-        Map<String, List<String>> headersFromBody = accountService.transactionHeaders(accountNumber, amount, httpHeaders);
-        return Response
-                .status(Response.Status.OK)
-                .entity(headersFromBody)
-                .type(MediaType.APPLICATION_JSON)
-                .build();
-    }
 }

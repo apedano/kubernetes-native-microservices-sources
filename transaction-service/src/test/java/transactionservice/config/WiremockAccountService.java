@@ -23,16 +23,16 @@ public class WiremockAccountService implements QuarkusTestResourceLifecycleManag
         wireMockServer = new WireMockServer();
         log.info("Starting wireMockServer");
         wireMockServer.start();
-        stubFor(get(urlEqualTo("/accounts/repository/121212/balance"))
+        stubFor(get(urlEqualTo("/accounts/active-record/121212/balance"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("435.76")
                 ));
-        stubFor(post(urlEqualTo("/accounts/repository/121212/transaction"))
+        stubFor(put(urlEqualTo("/accounts/active-record/121212/withdraw"))
                 .willReturn(noContent())
         );
 
-        stubFor(post(urlEqualTo("/accounts/repository/121212/transaction-headers"))
+        stubFor(post(urlEqualTo("/accounts/active-record/121212/transaction-headers"))
                 .willReturn(aResponse()
                                 .withHeader("Content-Type", "application/json")
                                 .withBody("{\"myHeader\": [\"myValue\"]}")

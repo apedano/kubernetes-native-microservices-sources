@@ -25,16 +25,4 @@ public class TransactionResourceTest {
                 .then()
                 .statusCode(200);
     }
-
-    @Test
-    void testTransactionHeaders() {
-        given()
-                .body("142.12")
-                .contentType(ContentType.JSON)
-                .when().post("/transactions/{accountNumber}/headers", 121212)
-                .then()
-//                .header("myHeader", equalTo("myValue"))
-//                .body(containsString("myHeader"))
-                .statusCode(200);
-    }
 }

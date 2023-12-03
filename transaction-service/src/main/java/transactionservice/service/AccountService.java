@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletionStage;
 
-@Path("/accounts/repository") //the same as in the AccountResource
+@Path("/accounts/active-record") //the same as in the AccountResource
 @RegisterRestClient(configKey = "account-service") //the properties name component to configure the client
 //Indicates that the interface should have a CDI bean created that can be injected into classes
 @ClientHeaderParam(name = "class-level-param", value = "AccountServiceinterface") //Adds class-level-param to the outgoing HTTP request header.
@@ -32,29 +32,29 @@ public interface AccountService {
     @Path("/{acctNumber}/balance")
     BigDecimal getBalance(@PathParam("acctNumber") Long accountNumber);
 
-    @POST
-    @Path("{accountNumber}/transaction")
-    void transact(@PathParam("accountNumber") Long accountNumber,
+    @PUT
+    @Path("{accountNumber}/withdraw")
+    void withdraw(@PathParam("accountNumber") Long accountNumber,
                   BigDecimal amount);
 
-    @POST
-    @Path("{accountNumber}/transaction-async")
-    CompletionStage<Void> transactAsync(@PathParam("accountNumber") Long
-                                                accountNumber, BigDecimal amount);
-
-    @POST
-    @Path("{accountNumber}/transaction-headers")
-    @ClientHeaderParam(name = "method-level-param", value = "{generateParameterValue}")
-        //Similar to the usage of @ClientHeaderParam on the type, it adds the method-level-param header to
-        //the outbound HTTP request to the external service.
-    Map<String, List<String>> transactionHeaders(@PathParam("accountNumber") Long
-                                                         accountNumber, BigDecimal amount, @Context HttpHeaders httpHeaders);
-
-    /**
-     * Default method on the interface used to create a value for the header on transactionHeaders
-     * @return
-     */
-    default String generateParameterValue() {
-        return "Value generated in method for async call";
-    }
+//    @POST
+//    @Path("{accountNumber}/transaction-async")
+//    CompletionStage<Void> transactAsync(@PathParam("accountNumber") Long
+//                                                accountNumber, BigDecimal amount);
+//
+//    @POST
+//    @Path("{accountNumber}/transaction-headers")
+//    @ClientHeaderParam(name = "method-level-param", value = "{generateParameterValue}")
+//        //Similar to the usage of @ClientHeaderParam on the type, it adds the method-level-param header to
+//        //the outbound HTTP request to the external service.
+//    Map<String, List<String>> transactionHeaders(@PathParam("accountNumber") Long
+//                                                         accountNumber, BigDecimal amount, @Context HttpHeaders httpHeaders);
+//
+//    /**
+//     * Default method on the interface used to create a value for the header on transactionHeaders
+//     * @return
+//     */
+//    default String generateParameterValue() {
+//        return "Value generated in method for async call";
+//    }
 }
