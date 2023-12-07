@@ -112,7 +112,21 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-metrics</artifactId>
     </dependency>
-
+<!--    Microprofile Opentracing impl - Jeager -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-opentracing</artifactId>
+    </dependency>
+<!--    Tracing DB calls-->
+    <dependency>
+      <groupId>io.opentracing.contrib</groupId>
+      <artifactId>opentracing-jdbc</artifactId>
+    </dependency>
+<!--    Tracing KAFKA client calls-->
+    <dependency>
+      <groupId>io.opentracing.contrib</groupId>
+      <artifactId>opentracing-kafka-client</artifactId>
+    </dependency>
 <!--    TEST DB dependencies-->
     <dependency>
       <groupId>io.quarkus</groupId>

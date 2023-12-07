@@ -55,14 +55,16 @@ services:
       - kafka
     networks:
       - quarkus-bank-network
-
   account-service:
     image: apedano/quarkus-account-service:latest
     container_name: account-service #this is used for external access within the network
     ports:
       - "8082:8082" # http://localhost:8082
     environment:
-      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://db:5432/quarkus_banking
+      #- QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://db:5432/quarkus_banking
+      - QUARKUS_JAEGER_ENDPOINT=http://jeager:14268/api/traces
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:tracing:postgresql://db:5432/quarkus_banking
+      - quarkus.hibernate-orm.dialect=org.hibernate.dialect.PostgreSQL10Dialect
     depends_on:
       - kafka
       - db
@@ -76,6 +78,7 @@ services:
     environment:
       - QUARKUS_HTTP_PORT=8088
       - quarkus.rest-client.account-service.url=http://account-service:8082
+      - QUARKUS_JAEGER_ENDPOINT=http://jeager:14268/api/traces
     depends_on:
       - kafka
       - account-service
@@ -89,6 +92,7 @@ services:
     environment:
       - QUARKUS_HTTP_PORT=8189
       - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - QUARKUS_JAEGER_ENDPOINT=http://jeager:14268/api/traces
     depends_on:
       - kafka
       - account-service
@@ -96,6 +100,7 @@ services:
       - quarkus-bank-network
   jaeger:
     image: jaegertracing/all-in-one:latest
+    container_name: jeager
     ports:
       - "6831:6831/udp"
       - "16686:16686"
