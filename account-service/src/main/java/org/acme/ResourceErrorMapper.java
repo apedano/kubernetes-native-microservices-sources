@@ -1,11 +1,15 @@
 package org.acme;
 
-import jakarta.json.Json;
-import jakarta.json.JsonObjectBuilder;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Optional;
 
 @Provider //indicates the class is an autodiscovered JAX-RS Provider
 public class ResourceErrorMapper implements ExceptionMapper<Exception> { //Implements ExceptionMapper for all Exception types
@@ -16,14 +20,23 @@ public class ResourceErrorMapper implements ExceptionMapper<Exception> { //Imple
             code = ((WebApplicationException) exception)
                     .getResponse().getStatus();
         }
-        JsonObjectBuilder entityBuilder = Json.createObjectBuilder()
-                .add("exceptionType", exception.getClass().getName())
-                .add("code", code);
-        if (exception.getMessage() != null) {
-            entityBuilder.add("error", exception.getMessage());
-        }
+        ErrorResponse errorResponse = ErrorResponse.of(
+                exception.getClass().getName(),
+                code,
+                Optional.ofNullable(exception.getMessage()).orElse("")
+        );
         return Response.status(code)
-                .entity(entityBuilder.build())
+                .entity(errorResponse)
                 .build();
+    }
+
+    @RegisterForReflection
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor(staticName = "of")
+    public static class ErrorResponse {
+        String exceptionType;
+        int code;
+        String error;
     }
 }

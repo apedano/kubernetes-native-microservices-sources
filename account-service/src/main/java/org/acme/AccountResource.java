@@ -5,6 +5,12 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.model.Account;
+import org.eclipse.microprofile.openapi.annotations.enums.ParameterIn;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -30,10 +36,29 @@ public class AccountResource {
         return accounts;
     }
 
+    @Tag(name = "get-by-accountnumber", description = "Separate grouping because we can")
+    @APIResponse(responseCode = "200", description = "Successfully retrieved an account.",
+            content = @Content(
+                    schema = @Schema(implementation = Account.class))
+    )
+    @APIResponse(responseCode = "400", description = "Account with id of {accountNumber} does not exist.",
+            content = @Content(
+                    schema = @Schema(
+                            implementation = ResourceErrorMapper.ErrorResponse.class,
+                            example = "{\n" +
+                                    "\"exceptionType\": \"javax.ws.rs.WebApplicationException\",\n" +
+                                    "\"code\": 400,\n" +
+                                    "\"error\": \"Account with id of 12345678 does not exist.\"\n" +
+                            "}\n")
+            )
+    )
     @GET
     @Path("/{accountNumber}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Account getAccount(@PathParam("accountNumber") Long accountNumber) {
+    public Account getAccount(
+            @Parameter(name = "accountNumber", description = "Number of the Account instance to be retrieved.",
+                    required = true, in = ParameterIn.PATH, example = "123456789")
+            @PathParam("accountNumber") Long accountNumber) {
         Optional<Account> response = accounts.stream()
                 .filter(acct -> acct.getAccountNumber().equals(accountNumber))
                 .findFirst();
