@@ -1,0 +1,14 @@
+### @Create access token
+
+POST http://localhost:8180/realms/bank/protocol/openid-connect/token
+content-type: application/x-www-form-urlencoded
+
+username=alice&password=alice&grant_type=password
+
+### Do it in the browser
+
+GET http://localhost:8286/bank/secure/secrets
+
+### @TokenInfo
+
+GET http://localhost:8286/token/tokeninfo

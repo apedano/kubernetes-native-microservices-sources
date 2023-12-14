@@ -1,6 +1,7 @@
 package quarkus.service;
 
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -46,6 +47,13 @@ public class BankResource {
     @ConfigProperty(name="password")
     String password;
 
+    @RolesAllowed("bankadmin")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/secure/secrets")
+    public Map<String, String> secureGetSecrets() {
+        return getSecrets();
+    }
 
     @GET
     @Path("/name")

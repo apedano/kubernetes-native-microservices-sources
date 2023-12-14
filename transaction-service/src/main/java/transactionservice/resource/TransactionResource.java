@@ -8,8 +8,6 @@ import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.smallrye.reactive.messaging.kafka.api.IncomingKafkaRecordMetadata;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -17,14 +15,11 @@ import org.apache.kafka.common.header.internals.RecordHeaders;
 import org.eclipse.microprofile.opentracing.Traced;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import transactionservice.AccountFee;
 import transactionservice.service.AccountService;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -38,9 +33,17 @@ public class TransactionResource {
     AccountService accountService;
 
     @GET
+    @Path("/config-secure/{acctnumber}/balance")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response secureConfigGetBalance(@PathParam("acctnumber") Long accountNumber) {
+        return getBalance(accountNumber);
+    }
+
+    @GET
     @Path("/{acctNumber}/balance")
     @Traced(operationName = "get-balance-from-account-service")
-    public Response balance(@PathParam("acctNumber") Long accountNumber) {
+    public Response getBalance(@PathParam("acctNumber") Long accountNumber) {
         BigDecimal balance = accountService.getBalance(accountNumber);
         return Response.ok(balance).build();
     }

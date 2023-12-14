@@ -90,6 +90,11 @@
       <groupId>io.opentracing.contrib</groupId>
       <artifactId>opentracing-kafka-client</artifactId>
     </dependency>
+<!--    Property file based identity provider and built in HTTP policy config-->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-elytron-security-properties-file</artifactId>
+    </dependency>
     <!-- Required for annotation processor in Intellij -->
 <!--    <dependency>-->
 <!--      <groupId>org.fusesource.jansi</groupId>-->
@@ -123,8 +128,16 @@
       <version>2.35.0</version>
       <scope>test</scope>
     </dependency>
-
-
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-core-spi</artifactId>
+    </dependency>
+<!--    Test authentication with @TestSecurity annotation-->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-test-security</artifactId>
+      <scope>test</scope>
+    </dependency>
 
   </dependencies>
   <build>
