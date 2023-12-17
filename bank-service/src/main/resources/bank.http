@@ -3,12 +3,27 @@
 POST http://localhost:8180/realms/bank/protocol/openid-connect/token
 content-type: application/x-www-form-urlencoded
 
-username=alice&password=alice&grant_type=password
+username=admin&password=admin&grant_type=password&client_id=bank&client_secret=4DePVOuZxVKNGYD9FLQk9sQ2SCT0QMYZ
+
+> {%
+    client.global.set("access_token", JSON.parse(JSON.stringify(response.body)).access_token);
+    client.log("Retrieved access token: " + client.global.get("access_token"));
+%}
+
+
+
 
 ### Do it in the browser
 
 GET http://localhost:8286/bank/secure/secrets
+Authorization: Bearer {{access_token}}
 
 ### @TokenInfo
 
 GET http://localhost:8286/token/tokeninfo
+
+Authorization: Bearer {{auth_token}}
+
+###
+
+GET http://localhost:8286/bank/secure/secrets

@@ -58,3 +58,24 @@ Content-Type: application/json
 GET http://localhost:8088/transactions/config-secure/5465/balance
 Authorization: Basic quarkus quarkus
 
+### @Generate access token (expires in 5 mins)
+#Gets a token from Keycloak, simulating the OIDC Implicit Flow. The token will be valid for five
+#minutes. To manually refresh the token after five minutes, rerun the command. The gettoken.sh
+#script is heavily documented.
+
+POST http://localhost:8080/realms/bank/protocol/openid-connect/token
+content-type: application/x-www-form-urlencoded
+
+username=jwt&password=jwt&grant_type=password&client_id=bank&client_secret=4DePVOuZxVKNGYD9FLQk9sQ2SCT0QMYZ
+
+> {%
+    client.global.set("access_token", JSON.parse(JSON.stringify(response.body)).access_token);
+    client.log("Retrieved access token: " + client.global.get("access_token"));
+%}
+
+### @JWT secured call using access token
+
+GET http://localhost:8088/transactions/jwt-secure/5465/balance
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{access_token}}

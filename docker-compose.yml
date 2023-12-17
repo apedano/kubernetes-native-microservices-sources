@@ -30,7 +30,7 @@ services:
     image: quay.io/keycloak/keycloak
     container_name: keycloak
     ports:
-      - "8180:8080"
+      - "8080:8080"
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
@@ -39,6 +39,8 @@ services:
       - --import-realm
     volumes:
       - ./bank-realm.json:/opt/keycloak/data/import/realm.json
+    networks:
+      - quarkus-bank-network
   kafka:
     image: 'bitnami/kafka:latest'
     ports:
@@ -116,6 +118,17 @@ services:
       - account-service
     networks:
       - quarkus-bank-network
+#  bank-service:
+#    image: apedano/quarkus-bank-service:latest
+#    container_name: bank-service #this is used for external access within the network
+#    ports:
+#      - "8286:8286"
+#    environment:
+#      - QUARKUS_HTTP_PORT=8286
+#    depends_on:
+#      - auth
+#    networks:
+#      - quarkus-bank-network
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: jeager

@@ -4,6 +4,7 @@ import io.opentracing.Tracer;
 import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.smallrye.common.annotation.Blocking;
 import io.smallrye.reactive.messaging.kafka.api.OutgoingKafkaRecordMetadata;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
@@ -68,6 +69,14 @@ public class AccountResourceAR {
     public BigDecimal getBalance(@PathParam("accountNumber") Long accountNumber) {
         tracer.activeSpan().setTag("accountNumber", accountNumber);
         return getAccount(accountNumber).balance;
+    }
+
+    @RolesAllowed("customer")
+    @GET
+    @Path("/jwt-secure/{acctNumber}/balance")
+    public BigDecimal getBalanceJWT(
+            @PathParam("acctNumber") Long accountNumber) {
+        return getBalance(accountNumber);
     }
 
     @POST

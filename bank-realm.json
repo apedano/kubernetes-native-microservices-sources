@@ -98,7 +98,7 @@
             "consentRequired": false,
             "standardFlowEnabled": true,
             "implicitFlowEnabled": false,
-            "directAccessGrantsEnabled": false,
+            "directAccessGrantsEnabled": true,
             "serviceAccountsEnabled": true,
             "authorizationServicesEnabled": true,
             "publicClient": false,
@@ -112,7 +112,8 @@
                 "post.logout.redirect.uris": "+",
                 "oauth2.device.authorization.grant.enabled": "false",
                 "display.on.consent.screen": "false",
-                "backchannel.logout.revoke.offline.tokens": "false"
+                "backchannel.logout.revoke.offline.tokens": "false",
+                "backchannel.logout.url": ""
             },
             "authenticationFlowBindingOverrides": {},
             "fullScopeAllowed": true,
@@ -126,6 +127,7 @@
                     "config": {
                         "user.session.note": "client_id",
                         "introspection.token.claim": "true",
+                        "userinfo.token.claim": "true",
                         "id.token.claim": "true",
                         "access.token.claim": "true",
                         "claim.name": "client_id",
@@ -140,6 +142,7 @@
                     "config": {
                         "user.session.note": "clientAddress",
                         "introspection.token.claim": "true",
+                        "userinfo.token.claim": "true",
                         "id.token.claim": "true",
                         "access.token.claim": "true",
                         "claim.name": "clientAddress",
@@ -154,6 +157,7 @@
                     "config": {
                         "user.session.note": "clientHost",
                         "introspection.token.claim": "true",
+                        "userinfo.token.claim": "true",
                         "id.token.claim": "true",
                         "access.token.claim": "true",
                         "claim.name": "clientHost",
@@ -164,8 +168,8 @@
             "defaultClientScopes": [
                 "web-origins",
                 "acr",
-                "roles",
                 "profile",
+                "roles",
                 "microprofile-jwt",
                 "email"
             ],

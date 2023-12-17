@@ -1,5 +1,6 @@
 package transactionservice.service;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -31,6 +32,10 @@ public interface AccountService {
     @GET
     @Path("/{acctNumber}/balance")
     BigDecimal getBalance(@PathParam("acctNumber") Long accountNumber);
+
+    @GET
+    @Path("/jwt-secure/{acctNumber}/balance")
+    BigDecimal getBalanceJwtSecured(@PathParam("acctNumber") Long accountNumber);
 
     @PUT
     @Path("{accountNumber}/withdraw")

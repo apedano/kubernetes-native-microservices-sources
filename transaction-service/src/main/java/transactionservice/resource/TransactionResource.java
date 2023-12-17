@@ -6,6 +6,7 @@ import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.contrib.kafka.TracingKafkaUtils;
 import io.smallrye.reactive.messaging.kafka.api.IncomingKafkaRecordMetadata;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -38,6 +39,17 @@ public class TransactionResource {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response secureConfigGetBalance(@PathParam("acctnumber") Long accountNumber) {
         return getBalance(accountNumber);
+    }
+
+    @GET
+    @RolesAllowed("customer")
+    @Path("/jwt-secure/{acctnumber}/balance")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response jwtGetBalance(
+            @PathParam("acctnumber") Long accountNumber) {
+        BigDecimal balance = accountService.getBalanceJwtSecured(accountNumber);
+        return Response.ok(balance).build();
     }
 
     @GET

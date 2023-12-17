@@ -65,6 +65,12 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-hibernate-orm-panache</artifactId>
     </dependency>
+<!--    Secure endpoints via JWT token -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-jwt</artifactId>
+    </dependency>
+
 <!--    TEST dependencies-->
     <dependency>
       <groupId>io.quarkus</groupId>
